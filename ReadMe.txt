@@ -1,12 +1,12 @@
 University of Bilkent
-ME430: HEAT EXCHANGERS § DESIGN
+ME430: HEAT EXCHANGERS Â§ DESIGN
 SHELL AND TUBE HEAT EXCHANGER DESIGN FOR OLYMPIC POOLS
-Instructor: Dr. Barbaros ÇETIN
+Instructor: Dr. Barbaros Ã‡ETIN
 Prepared by Yunus Ozkan and Bahadir Bilir
 Please read the instructions before use it.
-For any questions, please raise an issue on git or reach us by using e-mail, yunuszkn01@gmail.com
+For any questions, please raise an issue on git or reach us by using e-mail, hamibahadirbilir@gmail.com
 
-#All formulas taken from Heat Exchangers Selection, Rating and Thermal Design by Sadik Kakaç ,Hongtan Liu, Anchasa Pramuanjaroekenji
+#All formulas taken from Heat Exchangers Selection, Rating and Thermal Design by Sadik KakaÃ§ ,Hongtan Liu, Anchasa Pramuanjaroekenji
 
 According to TEMA:
 
@@ -46,5 +46,5 @@ Maximum working pressure on both sides are 6 bar.
 
 Best regards,
 
-Yunus Özkan
+Yunus Ã–zkan
 Bahadir Bilir
