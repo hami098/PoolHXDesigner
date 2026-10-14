@@ -77,6 +77,7 @@ ACTIVE_TAB_UNDERLINE_WIDTH = 3
 
 DESKTOP_WINDOW_CLIENT_PACKAGE = "flet_desktop"
 WEB_SERVER_CLIENT_PACKAGE = "flet_web"
+WEB_ASSETS_DIRECTORY = Path(__file__).resolve().parent / "web_assets"
 
 INSTALL_EXTRA_FOR_CLIENT_PACKAGE = {
     DESKTOP_WINDOW_CLIENT_PACKAGE: "desktop-interface",
@@ -611,6 +612,7 @@ def start_graphical_interface(
             host=host,
             port=port,
             no_cdn=True,
+            assets_dir=str(WEB_ASSETS_DIRECTORY),
         )
         return
 

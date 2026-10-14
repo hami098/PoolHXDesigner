@@ -34,3 +34,4 @@ stated reason.
 | [0025](0025-pyproject-is-the-single-source-of-the-version.md) | pyproject.toml is the single source of the version |
 | [0026](0026-the-compare-subcommand-is-removed.md) | The compare subcommand is removed |
 | [0027](0027-the-2022-regression-apparatus-is-removed.md) | The 2022 regression apparatus is removed |
+| [0028](0028-the-application-icon-is-the-phxd-symbol.md) | The application icon is the PHXD symbol |
