@@ -1,6 +1,8 @@
 # 11. Characterisation tests captured before the rewrite
 
 Date: 2026-10-14
+Status: superseded by [0027](0027-the-2022-regression-apparatus-is-removed.md): the apparatus
+served its purpose and was retired
 Status: accepted
 
 ## Context

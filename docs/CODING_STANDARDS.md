@@ -115,7 +115,6 @@ Command line exit codes:
 | 0 | success |
 | 2 | a `DesignError`, reported as one line with no traceback |
 | 3 | a standards violation, only with `--fail-on-unsatisfied-constraint` |
-| 4 | two results differ, from `compare` |
 
 Decision record: [0007](decisions/0007-impossible-geometry-raises-but-a-standards-violation-is-reported.md).
 
@@ -165,31 +164,23 @@ The report computes its label column width from the longest label in the current
 longer translation cannot break the alignment. A hardcoded width did break it, and was fixed.
 
 The JSON result file stays English in both its keys and its constraint text, deliberately. It is
-a machine record that `poolhx compare` diffs; if it changed language, two runs of the same design
-in different languages would compare as different.
+a machine record meant to be diffed; if it changed language, two runs of the same design in
+different languages would differ.
 
 ## Tests
 
-258 tests. Four kinds:
-
-**Characterisation and regression.** Before any new code was written, the 2022 program was
-driven headlessly through its own widgets across four design cases, and every intermediate
-result captured to `tests/reference/original_implementation_behaviour.json`. The capture script
-sits next to it and still reproduces that file byte for byte.
-`test_regression_against_original_implementation.py` then asserts that each quantity is either
-identical to twelve significant figures or different for a reason named in the test's own name
-and proven inside it. The test covering the swapped film coefficients reproduces the 2022
-numbers exactly by deliberately re-applying the bug, which proves the bug is the whole of the
-difference.
+Three kinds:
 
 **Unit tests with named behaviour.** Test names are the specification, because there are no
 docstrings. `test_equal_terminal_differences_return_that_difference_not_a_division_by_zero`
-says what the code must do and why the edge case matters.
+says what the code must do and why the edge case matters. During the rewrite a fourth kind
+existed: a characterisation suite that drove the 2022 program headlessly and pinned every
+quantity to twelve significant figures. It served its purpose and was retired
+([0027](decisions/0027-the-2022-regression-apparatus-is-removed.md)); the four corrections it
+proved are recorded in [validation.md](validation.md#deliberate-numerical-differences-from-the-2022-implementation).
 
-**Numerical tolerance.** `pytest.approx` with an explicit `rel`. Unchanged quantities use
-`1e-12`. Deliberate deviations use a tolerance that states how large the deviation is allowed to
-be: `3e-3` for the Prandtl rounding, `5e-3` where the 2022 number was only printed to two
-decimals.
+**Numerical tolerance.** `pytest.approx` with an explicit `rel` that states how large a
+deviation is allowed to be, never a bare `approx`.
 
 **Standards tests.** `test_the_project_standards_hold.py` polices this document: no comments
 and no docstrings in `src/` or `tests/`, no Flet in the core, every catalogue message used, no Turkish outside the catalogue, units in boundary names,
@@ -216,8 +207,7 @@ characters is usually a call that should be broken across lines anyway, and the 
 long argument lists readable rather than hiding them off the right edge. `docs/` is excluded
 from linting.
 
-**mypy** strict, with `tests/reference/` excluded because the capture script imports the 2022
-module, which lives only in git history (commit `067f66e`).
+**mypy** strict over `src` and `tests`, nothing excluded.
 
 ## Dependencies
 

@@ -23,14 +23,14 @@ edition in use before this document is published as final.**
 | `tube_side_correlations.gnielinski_nusselt_number` | tube side Nusselt number | `Nu = (f/2)(Re−1000)Pr / [1 + 12.7 (f/2)^½ (Pr^⅔ − 1)]` | Gnielinski, via Kakaç ch. 3 `verify` | `Re ≥ 1e4`, `0.5 ≤ Pr ≤ 2000` | `test_the_gnielinski_validity_window_is_reported_rather_than_enforced` |
 | `tube_side_correlations.pressure_drop_pascal` | tube side pressure drop | `Δp = 4 f (L·Nₚ/dᵢ) · G²/(2ρ)` | Kakaç ch. 4 `verify` | same as the friction factor | `test_the_tube_side_pressure_drop_grew_because_the_original_used_the_shell_side_mass_flux` |
 | `shell_side_correlations.equivalent_diameter_meters` | shell side equivalent diameter | square: `4(P² − πd²/4)/(πd)`; triangular: `4(P²√3/4 − πd²/8)/(πd/2)` | Kakaç ch. 8 `verify` | square and triangular layouts only | `test_the_two_pitch_layouts_give_different_equivalent_diameters` |
-| `shell_side_correlations.crossflow_area_square_meters` | shell side crossflow area | `Aₛ = Dₛ · C · B / P` | Kakaç ch. 8 `verify` | single shell pass | regression suite |
+| `shell_side_correlations.crossflow_area_square_meters` | shell side crossflow area | `Aₛ = Dₛ · C · B / P` | Kakaç ch. 8 `verify` | single shell pass | retired regression suite (0027) |
 | `shell_side_correlations.kern_heat_transfer_coefficient_watts_per_square_meter_kelvin` | shell side coefficient, Kern method | `h = 0.36 (k/Dₑ) Re^0.55 Pr^⅓ (μ/μ_w)^0.14` | Kern, via Kakaç ch. 8 `verify` | `2e3 ≤ Re ≤ 1e6` | `test_the_kern_validity_window_is_reported_rather_than_enforced` |
-| `shell_side_correlations.kern_friction_factor` | shell side friction factor | `f = exp(0.576 − 0.19 ln Re)` | Kern, via Kakaç ch. 8 `verify` | as above | regression suite |
+| `shell_side_correlations.kern_friction_factor` | shell side friction factor | `f = exp(0.576 − 0.19 ln Re)` | Kern, via Kakaç ch. 8 `verify` | as above | retired regression suite (0027) |
 | `shell_side_correlations.kern_pressure_drop_pascal` | shell side pressure drop | `Δp = f G² (N_b + 1) Dₛ / (2 ρ Dₑ φ)` | Kern, via Kakaç ch. 8 `verify` | as above | `test_the_shell_side_pressure_drop_is_exactly_half_the_original_which_omitted_the_factor_two` |
 | `thermal.referred_to_outside_area` | overall coefficient on the outside area | `U_o = [1/h_o + (r_o/r_i)/h_i + R_f + r_o ln(r_o/r_i)/k]^−1` | Kakaç ch. 2 `verify` | clean and fouled variants | `test_the_overall_coefficient_is_not_symmetric_in_the_two_film_coefficients` |
 | `log_mean_temperature_difference.counterflow_log_mean_temperature_difference_kelvin` | counterflow LMTD | `ΔT_lm = (ΔT₁ − ΔT₂)/ln(ΔT₁/ΔT₂)` | Kakaç ch. 2 | both terminal differences positive | `test_the_log_mean_temperature_difference_lies_between_the_two_terminal_differences` |
-| `thermal.shell_inner_diameter_meters` | preliminary shell diameter | `Dₛ = 0.637 √(CL/CTP) · √(A · PR² · d_o / L)` | Kakaç ch. 8 `verify` | preliminary sizing only | regression suite |
-| `thermal.tube_count` | preliminary tube count | `N_t = 0.785 (CTP/CL) Dₛ² / (PR² d_o²)` | Kakaç ch. 8 `verify` | preliminary sizing only | regression suite |
+| `thermal.shell_inner_diameter_meters` | preliminary shell diameter | `Dₛ = 0.637 √(CL/CTP) · √(A · PR² · d_o / L)` | Kakaç ch. 8 `verify` | preliminary sizing only | retired regression suite (0027) |
+| `thermal.tube_count` | preliminary tube count | `N_t = 0.785 (CTP/CL) Dₛ² / (PR² d_o²)` | Kakaç ch. 8 `verify` | preliminary sizing only | retired regression suite (0027) |
 
 ## Constants that the author chose rather than derived
 
@@ -74,12 +74,12 @@ edit to the data file breaks that agreement by more than 1 %.
 
 ## Deliberate numerical differences from the 2022 implementation
 
-The rewrite reproduces the 2022 results exactly except for the four items below. Each one is a
-correction, each one is proven by a named test, and the 2022 behaviour is preserved in
-`tests/reference/original_implementation_behaviour.json` so the comparison stays checkable.
-The JSON was captured by `tests/reference/how_the_original_behaviour_was_captured.py`; the 2022
-source it drives lives in git history at commit `067f66e`, so re-running the capture means
-restoring `main.py` and `Water.csv` from that commit first.
+The rewrite reproduced the 2022 results exactly except for the four corrections below. During
+the rewrite each one was proven by a dedicated regression suite that drove the 2022 program
+headlessly and compared every intermediate quantity to twelve significant figures; that
+apparatus was removed once it had served its purpose
+([decision 0027](decisions/0027-the-2022-regression-apparatus-is-removed.md)). The 2022 source
+lives in git history at commit `067f66e`.
 
 ### 1. The two film coefficients were swapped in the preliminary design
 
@@ -90,16 +90,14 @@ disagreed with each other and the manual iteration converged on the wrong answer
 two assumed coefficients differed.
 
 Effect: the suggested shell diameter and tube count change whenever the assumed tube side and
-shell side coefficients are not equal, and are unchanged when they are equal.
-Proof: `test_the_suggested_sizing_differs_only_because_the_original_swapped_the_two_film_coefficients`,
-which reproduces the 2022 numbers exactly by deliberately re-applying the swap.
+shell side coefficients are not equal, and are unchanged when they are equal. The retired
+regression suite proved it by re-applying the swap and reproducing the 2022 numbers exactly.
 
 ### 2. The shell side pressure drop was missing a factor of two
 
 Kern's correlation divides by `2 ρ Dₑ φ`. The 2022 code divided by `ρ Dₑ φ`.
 
 Effect: shell side pressure drop is now exactly half the 2022 value.
-Proof: `test_the_shell_side_pressure_drop_is_exactly_half_the_original_which_omitted_the_factor_two`.
 
 ### 3. The tube side pressure drop used the shell side mass flux
 
@@ -110,14 +108,14 @@ already being computed for Gnielinski.
 
 Effect: the tube side pressure drop is now larger, by roughly an order of magnitude for
 typical pool geometries. The hand entered friction factor field is gone.
-Proof: `test_the_tube_side_pressure_drop_grew_because_the_original_used_the_shell_side_mass_flux`.
 
 ### 4. The shell side Prandtl number is read from the table instead of recomputed
 
 The 2022 code formed `Pr = c_p μ / k` from the other tabulated columns. The rewrite uses the
 tabulated `Pr` column. The two differ only by the rounding of the published table, which
 changes the shell side coefficient by under 0.3 %.
-Proof: `test_the_shell_side_heat_transfer_coefficient_changed_only_by_the_prandtl_rounding`.
+`test_the_tabulated_prandtl_number_agrees_with_the_other_tabulated_columns` keeps the two
+within 1 % of each other.
 
 ## Known limitations
 

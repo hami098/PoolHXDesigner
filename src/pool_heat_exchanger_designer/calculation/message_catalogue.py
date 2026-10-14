@@ -51,8 +51,6 @@ class MessageKey(Enum):
     DESIGN_CASE_FILE_NOT_FOUND = auto()
     DESIGN_CASE_FILE_IS_NOT_VALID_TOML = auto()
     UNKNOWN_PITCH_LAYOUT = auto()
-    RESULT_FILE_NOT_FOUND = auto()
-    RESULT_FILE_IS_NOT_VALID_JSON = auto()
 
     INTERFACE_CLIENT_PACKAGE_MISSING = auto()
     FIELD_IS_NOT_A_USABLE_NUMBER = auto()
@@ -161,7 +159,6 @@ class MessageKey(Enum):
     REPORT_CONVERGED = auto()
     COMMAND_DESCRIPTION = auto()
     COMMAND_EVALUATE_HELP = auto()
-    COMMAND_COMPARE_HELP = auto()
     COMMAND_GUI_HELP = auto()
     COMMAND_JSON_OUTPUT_HELP = auto()
     COMMAND_QUIET_HELP = auto()
@@ -169,11 +166,6 @@ class MessageKey(Enum):
     COMMAND_WEB_HELP = auto()
     COMMAND_LANGUAGE_HELP = auto()
     COMMAND_VERSION_HELP = auto()
-    COMMAND_RESULTS_AGREE = auto()
-    COMMAND_COMPARISON_QUANTITY = auto()
-    COMMAND_COMPARISON_FIRST = auto()
-    COMMAND_COMPARISON_SECOND = auto()
-    COMMAND_COMPARISON_RELATIVE = auto()
     COMMAND_INTERFACE_NEEDS_FLET = auto()
 
     TAB_INPUTS = auto()
@@ -432,14 +424,6 @@ MESSAGE_CATALOGUE: dict[MessageKey, dict[Language, str]] = {
     MessageKey.UNKNOWN_PITCH_LAYOUT: {
         Language.ENGLISH: "Unknown pitch layout {name}; choose one of {selectable}",
         Language.TURKISH: "Bilinmeyen adım düzeni {name}; şunlardan birini seçin: {selectable}",
-    },
-    MessageKey.RESULT_FILE_NOT_FOUND: {
-        Language.ENGLISH: "Result file not found: {path}",
-        Language.TURKISH: "Sonuç dosyası bulunamadı: {path}",
-    },
-    MessageKey.RESULT_FILE_IS_NOT_VALID_JSON: {
-        Language.ENGLISH: "{path} is not valid JSON: {reason}",
-        Language.TURKISH: "{path} geçerli JSON değil: {reason}",
     },
     MessageKey.INTERFACE_CLIENT_PACKAGE_MISSING: {
         Language.ENGLISH: (
@@ -837,17 +821,13 @@ MESSAGE_CATALOGUE: dict[MessageKey, dict[Language, str]] = {
         Language.ENGLISH: "Evaluate one design case and report the results",
         Language.TURKISH: "Bir tasarımı değerlendir ve sonuçları raporla",
     },
-    MessageKey.COMMAND_COMPARE_HELP: {
-        Language.ENGLISH: "Compare two JSON results produced by evaluate",
-        Language.TURKISH: "Evaluate ile üretilmiş iki JSON sonucu karşılaştır",
-    },
     MessageKey.COMMAND_GUI_HELP: {
         Language.ENGLISH: "Start the graphical user interface",
         Language.TURKISH: "Grafik arayüzü başlat",
     },
     MessageKey.COMMAND_JSON_OUTPUT_HELP: {
-        Language.ENGLISH: "Write the full result as JSON for later comparison",
-        Language.TURKISH: "Sonucun tamamını sonraki karşılaştırma için JSON olarak yaz",
+        Language.ENGLISH: "Write the full result as JSON",
+        Language.TURKISH: "Sonucun tamamını JSON olarak yaz",
     },
     MessageKey.COMMAND_QUIET_HELP: {
         Language.ENGLISH: "Suppress the aligned text report on standard output",
@@ -868,26 +848,6 @@ MESSAGE_CATALOGUE: dict[MessageKey, dict[Language, str]] = {
     MessageKey.COMMAND_VERSION_HELP: {
         Language.ENGLISH: "Print the program version and exit",
         Language.TURKISH: "Program sürümünü yazdır ve çık",
-    },
-    MessageKey.COMMAND_RESULTS_AGREE: {
-        Language.ENGLISH: "The two results agree within the requested tolerance",
-        Language.TURKISH: "İki sonuç istenen tolerans içinde uyuşuyor",
-    },
-    MessageKey.COMMAND_COMPARISON_QUANTITY: {
-        Language.ENGLISH: "Quantity",
-        Language.TURKISH: "Büyüklük",
-    },
-    MessageKey.COMMAND_COMPARISON_FIRST: {
-        Language.ENGLISH: "First",
-        Language.TURKISH: "Birinci",
-    },
-    MessageKey.COMMAND_COMPARISON_SECOND: {
-        Language.ENGLISH: "Second",
-        Language.TURKISH: "İkinci",
-    },
-    MessageKey.COMMAND_COMPARISON_RELATIVE: {
-        Language.ENGLISH: "Relative",
-        Language.TURKISH: "Bağıl",
     },
     MessageKey.COMMAND_INTERFACE_NEEDS_FLET: {
         Language.ENGLISH: (

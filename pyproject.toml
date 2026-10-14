@@ -95,7 +95,6 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ARG001", "ARG005"]
 "tests/test_user_interface.py" = ["ARG005", "E402"]
-"tests/reference/*" = ["ARG002", "E402", "N806", "N816", "PTH123"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -103,7 +102,6 @@ quote-style = "double"
 [tool.mypy]
 python_version = "3.12"
 files = ["src", "tests"]
-exclude = "tests/reference/"
 strict = true
 warn_unreachable = true
 disallow_untyped_defs = true

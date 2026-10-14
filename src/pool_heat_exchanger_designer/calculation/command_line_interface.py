@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import tomllib
 from collections.abc import Sequence
 from importlib.metadata import version as installed_distribution_version
 from pathlib import Path
-from typing import Any
 
 from pool_heat_exchanger_designer.calculation.design_case import read_design_case_from_toml_path
 from pool_heat_exchanger_designer.calculation.design_errors import DesignError
@@ -31,9 +29,6 @@ from pool_heat_exchanger_designer.calculation.translator import Translator
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_DESIGN_ERROR = 2
 EXIT_CODE_CONSTRAINT_VIOLATED = 3
-EXIT_CODE_RESULTS_DIFFER = 4
-
-COMPARISON_RELATIVE_TOLERANCE = 1.0e-9
 
 
 def program_version() -> str:
@@ -87,18 +82,6 @@ def build_argument_parser() -> argparse.ArgumentParser:
         help=english.text(MessageKey.COMMAND_FAIL_ON_CONSTRAINT_HELP),
     )
 
-    compare = subcommands.add_parser(
-        "compare",
-        help=english.text(MessageKey.COMMAND_COMPARE_HELP),
-    )
-    compare.add_argument("first_result_path", type=Path)
-    compare.add_argument("second_result_path", type=Path)
-    compare.add_argument(
-        "--relative-tolerance",
-        type=float,
-        default=COMPARISON_RELATIVE_TOLERANCE,
-    )
-
     graphical_interface = subcommands.add_parser(
         "gui",
         help=english.text(MessageKey.COMMAND_GUI_HELP),
@@ -120,8 +103,6 @@ def main(argument_values: Sequence[str] | None = None) -> int:
     try:
         if arguments.subcommand == "evaluate":
             return _run_evaluate(arguments, translator)
-        if arguments.subcommand == "compare":
-            return _run_compare(arguments, translator)
         return _run_graphical_interface(arguments, translator)
     except DesignError as design_error:
         print(
@@ -149,29 +130,6 @@ def _run_evaluate(arguments: argparse.Namespace, translator: Translator) -> int:
     return EXIT_CODE_SUCCESS
 
 
-def _run_compare(arguments: argparse.Namespace, translator: Translator) -> int:
-    first = _read_json(arguments.first_result_path)
-    second = _read_json(arguments.second_result_path)
-    differences = compare_result_dictionaries(first, second, arguments.relative_tolerance)
-
-    if not differences:
-        print(translator.text(MessageKey.COMMAND_RESULTS_AGREE))
-        return EXIT_CODE_SUCCESS
-
-    quantity_word = translator.text(MessageKey.COMMAND_COMPARISON_QUANTITY)
-    first_word = translator.text(MessageKey.COMMAND_COMPARISON_FIRST)
-    second_word = translator.text(MessageKey.COMMAND_COMPARISON_SECOND)
-    relative_word = translator.text(MessageKey.COMMAND_COMPARISON_RELATIVE)
-    print(f"{quantity_word:<66}{first_word:>16}{second_word:>16}{relative_word:>14}")
-    for path, first_value, second_value, relative_difference in differences:
-        relative_text = "-" if relative_difference is None else f"{relative_difference:.3e}"
-        print(
-            f"{path:<66}{_format_value(first_value):>16}"
-            f"{_format_value(second_value):>16}{relative_text:>14}"
-        )
-    return EXIT_CODE_RESULTS_DIFFER
-
-
 def _run_graphical_interface(arguments: argparse.Namespace, translator: Translator) -> int:
     try:
         from pool_heat_exchanger_designer.user_interface.application import (
@@ -194,86 +152,3 @@ def _run_graphical_interface(arguments: argparse.Namespace, translator: Translat
         language=translator.language,
     )
     return EXIT_CODE_SUCCESS
-
-
-def compare_result_dictionaries(
-    first: dict[str, Any],
-    second: dict[str, Any],
-    relative_tolerance: float = COMPARISON_RELATIVE_TOLERANCE,
-) -> list[tuple[str, Any, Any, float | None]]:
-    differences: list[tuple[str, Any, Any, float | None]] = []
-    _collect_differences(first, second, "", relative_tolerance, differences)
-    return differences
-
-
-def _collect_differences(
-    first: Any,
-    second: Any,
-    path: str,
-    relative_tolerance: float,
-    differences: list[tuple[str, Any, Any, float | None]],
-) -> None:
-    if isinstance(first, dict) and isinstance(second, dict):
-        for key in dict.fromkeys([*first, *second]):
-            _collect_differences(
-                first.get(key),
-                second.get(key),
-                f"{path}.{key}" if path else str(key),
-                relative_tolerance,
-                differences,
-            )
-        return
-
-    if isinstance(first, list) and isinstance(second, list):
-        for index in range(max(len(first), len(second))):
-            _collect_differences(
-                first[index] if index < len(first) else None,
-                second[index] if index < len(second) else None,
-                f"{path}[{index}]",
-                relative_tolerance,
-                differences,
-            )
-        return
-
-    if isinstance(first, bool) or isinstance(second, bool):
-        if first != second:
-            differences.append((path, first, second, None))
-        return
-
-    if isinstance(first, (int, float)) and isinstance(second, (int, float)):
-        relative_difference = _relative_difference(float(first), float(second))
-        if relative_difference > relative_tolerance:
-            differences.append((path, first, second, relative_difference))
-        return
-
-    if first != second:
-        differences.append((path, first, second, None))
-
-
-def _relative_difference(first: float, second: float) -> float:
-    if first == second:
-        return 0.0
-    largest_magnitude = max(abs(first), abs(second))
-    if largest_magnitude == 0.0:
-        return 0.0
-    return abs(first - second) / largest_magnitude
-
-
-def _read_json(path: Path) -> dict[str, Any]:
-    try:
-        parsed: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-        return parsed
-    except FileNotFoundError as missing_file:
-        raise DesignError(MessageKey.RESULT_FILE_NOT_FOUND, path=path) from missing_file
-    except json.JSONDecodeError as malformed_file:
-        raise DesignError(
-            MessageKey.RESULT_FILE_IS_NOT_VALID_JSON,
-            path=path,
-            reason=malformed_file,
-        ) from (malformed_file)
-
-
-def _format_value(value: Any) -> str:
-    if isinstance(value, float):
-        return f"{value:.6g}"
-    return str(value)

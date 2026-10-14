@@ -18,9 +18,7 @@ from pool_heat_exchanger_designer import (
 from pool_heat_exchanger_designer.calculation.command_line_interface import (
     EXIT_CODE_CONSTRAINT_VIOLATED,
     EXIT_CODE_DESIGN_ERROR,
-    EXIT_CODE_RESULTS_DIFFER,
     EXIT_CODE_SUCCESS,
-    compare_result_dictionaries,
     main,
 )
 from pool_heat_exchanger_designer.calculation.design_errors import (
@@ -281,7 +279,7 @@ def test_the_command_line_interface_can_fail_on_an_unsatisfied_constraint(
     assert exit_code == EXIT_CODE_CONSTRAINT_VIOLATED
 
 
-def test_two_identical_results_compare_as_equal(
+def test_two_runs_of_the_same_design_case_write_identical_json(
     capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:
     first_path = tmp_path / "first.json"
@@ -298,54 +296,4 @@ def test_two_identical_results_compare_as_equal(
         )
     capsys.readouterr()
 
-    exit_code = main(["compare", str(first_path), str(second_path)])
-
-    assert exit_code == EXIT_CODE_SUCCESS
-    assert "agree within" in capsys.readouterr().out
-
-
-def test_two_different_results_compare_as_different_and_name_the_quantity(
-    representative_design_case: DesignCase,
-    capsys: pytest.CaptureFixture[str],
-    tmp_path: Path,
-) -> None:
-    first_path = tmp_path / "first.json"
-    second_path = tmp_path / "second.json"
-    changed_case_path = tmp_path / "changed.toml"
-    changed_case_path.write_text(
-        design_case_as_toml_text(representative_design_case).replace(
-            "tube_count = 700", "tube_count = 800"
-        ),
-        encoding="utf-8",
-    )
-    write_design_case_to_toml_path(representative_design_case, tmp_path / "original.toml")
-
-    for case_path, output_path in (
-        (tmp_path / "original.toml", first_path),
-        (changed_case_path, second_path),
-    ):
-        main(
-            [
-                "evaluate",
-                str(case_path),
-                "--quiet",
-                "--json-output-path",
-                str(output_path),
-            ]
-        )
-    capsys.readouterr()
-
-    exit_code = main(["compare", str(first_path), str(second_path)])
-    output = capsys.readouterr().out
-
-    assert exit_code == EXIT_CODE_RESULTS_DIFFER
-    assert "inputs.tube_count" in output
-    assert "tube_side.reynolds_number" in output
-
-
-def test_the_comparison_ignores_differences_below_the_requested_tolerance() -> None:
-    first = {"value": 1.0}
-    second = {"value": 1.0 + 1.0e-12}
-
-    assert compare_result_dictionaries(first, second, 1.0e-9) == []
-    assert compare_result_dictionaries(first, second, 1.0e-15)
+    assert first_path.read_bytes() == second_path.read_bytes()

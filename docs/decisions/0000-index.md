@@ -17,7 +17,7 @@ stated reason.
 | [0008](0008-the-manual-coefficient-iteration-is-kept.md) | The manual coefficient iteration is kept |
 | [0009](0009-argparse-from-the-standard-library.md) | argparse from the standard library |
 | [0010](0010-one-pitch-layout-control-instead-of-two.md) | One pitch layout control instead of two |
-| [0011](0011-characterisation-tests-captured-before-the-rewrite.md) | Characterisation tests captured before the rewrite |
+| [0011](0011-characterisation-tests-captured-before-the-rewrite.md) | Characterisation tests captured before the rewrite (superseded by 0027) |
 | [0012](0012-docker-serves-the-web-interface-and-the-headless-run.md) | Docker serves the web interface and the headless run |
 | [0013](0013-a-flat-module-layout-rather-than-a-deep-package-tree.md) | Semantic packages, replacing the flat module layout (superseded by 0023) |
 | [0014](0014-flet-one-point-zero-verified-against-the-installed-package.md) | Flet 1.0 verified against the installed package |
@@ -32,3 +32,5 @@ stated reason.
 | [0023](0023-two-packages-calculation-and-user-interface.md) | Two packages: calculation and user_interface |
 | [0024](0024-the-2022-copy-is-removed-and-git-history-is-the-archive.md) | The 2022 copy is removed, and git history is the archive |
 | [0025](0025-pyproject-is-the-single-source-of-the-version.md) | pyproject.toml is the single source of the version |
+| [0026](0026-the-compare-subcommand-is-removed.md) | The compare subcommand is removed |
+| [0027](0027-the-2022-regression-apparatus-is-removed.md) | The 2022 regression apparatus is removed |

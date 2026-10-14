@@ -15,10 +15,10 @@ forty module level globals, and a README that told users to restart the program 
 an input after calculating. That version lives in this repository's git history, at commit
 `067f66e` (`git show 067f66e:main.py`).
 
-This is the 2026 rewrite. The physics was sound and is reproduced exactly; the engineering
-around it was not. Four real defects were found and fixed, and every one is proven by a named
-test that reproduces the old number on purpose before showing the new one. The whole accounting
-is in [docs/validation.md](docs/validation.md#deliberate-numerical-differences-from-the-2022-implementation).
+This is the 2026 rewrite. The physics was sound and was reproduced exactly; the engineering
+around it was not. Four real defects were found and fixed, each one proven against the 2022
+program during the rewrite. The whole accounting is in
+[docs/validation.md](docs/validation.md#deliberate-numerical-differences-from-the-2022-implementation).
 
 ## How to start the program
 
@@ -73,15 +73,12 @@ The first lines of output:
 
 `pool-heat-exchanger-designer` is the full name of the same command; `poolhx` is a shorter alias.
 
-### 3. Keep and compare results
+### 3. Keep results
 
-    poolhx evaluate examples/olympic_pool_fifty_meter.toml --json-output-path first.json
-    poolhx evaluate my_variant.toml --json-output-path second.json
-    poolhx compare first.json second.json
+    poolhx evaluate examples/olympic_pool_fifty_meter.toml --json-output-path result.json
 
-`compare` prints every quantity that differs by more than the tolerance and exits 4; it exits 0
-and says the two agree when they do. The JSON is deliberately English in any language, so that
-two runs stay comparable.
+The JSON holds every input and every computed quantity, and is deliberately English in any
+language, so two runs of the same design stay diffable with any diff tool.
 
 ### 4. Open the graphical interface
 
@@ -185,7 +182,7 @@ See [examples/olympic_pool_fifty_meter.toml](examples/olympic_pool_fifty_meter.t
 whole schema.
 
 This is where reproducibility comes from, not from the interface: the same file and the same
-version produce the same JSON, and two JSON files can be diffed by `poolhx compare`. The
+version produce the same JSON, and two JSON files can be diffed with any diff tool. The
 interface is an editor for the file and a viewer for the result.
 
 What is **not** claimed: bit for bit identical floating point results across operating systems,
