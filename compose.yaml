@@ -1,0 +1,18 @@
+services:
+  designer:
+    build: .
+    image: pool-heat-exchanger-designer:2.0.0
+    ports:
+      - "127.0.0.1:8550:8550"
+
+  evaluate:
+    build: .
+    image: pool-heat-exchanger-designer:2.0.0
+    volumes:
+      - ./examples:/work/examples:ro
+      - ./results:/work/results
+    command:
+      - evaluate
+      - examples/olympic_pool_fifty_meter.toml
+      - --json-output-path
+      - results/olympic_pool_fifty_meter.json

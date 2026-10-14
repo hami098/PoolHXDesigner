@@ -1,0 +1,111 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pool-heat-exchanger-designer"
+version = "2.0.0"
+description = "Shell and tube heat exchanger design tool for olympic swimming pools"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Hami Bahadir Bilir" },
+    { name = "Yunus Ozkan" },
+]
+keywords = [
+    "heat exchanger",
+    "shell and tube",
+    "thermal design",
+    "TEMA",
+    "swimming pool",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = []
+
+[project.optional-dependencies]
+desktop-interface = ["flet[desktop]>=1.0.4,<1.1"]
+web-interface = ["flet[web]>=1.0.4,<1.1"]
+
+[project.scripts]
+pool-heat-exchanger-designer = "pool_heat_exchanger_designer.calculation.command_line_interface:main"
+poolhx = "pool_heat_exchanger_designer.calculation.command_line_interface:main"
+
+[dependency-groups]
+development = [
+    "pytest>=8.3",
+    "ruff>=0.7",
+    "mypy>=1.13",
+]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/pool_heat_exchanger_designer", "pyproject.toml", "README.md"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pool_heat_exchanger_designer"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/pool_heat_exchanger_designer/calculation/liquid_water_properties_table.csv" = "pool_heat_exchanger_designer/calculation/liquid_water_properties_table.csv"
+
+[tool.flet]
+company = "Hami Bahadir Bilir"
+
+[tool.flet.app]
+path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --strict-config"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+target-version = "py312"
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "A",
+    "C4",
+    "SIM",
+    "RET",
+    "ARG",
+    "PTH",
+    "RUF",
+]
+ignore = [
+    "D",
+    "ANN",
+    "RUF001",
+    "RUF003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001", "ARG005"]
+"tests/test_user_interface.py" = ["ARG005", "E402"]
+"tests/reference/*" = ["ARG002", "E402", "N806", "N816", "PTH123"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests"]
+exclude = "tests/reference/"
+strict = true
+warn_unreachable = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+

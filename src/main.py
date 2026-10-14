@@ -1,0 +1,3 @@
+from pool_heat_exchanger_designer.user_interface.application import start_graphical_interface
+
+start_graphical_interface()
